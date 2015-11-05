@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include <sys/time.h>
 
@@ -10,53 +9,19 @@ double wctime() {
     return tv.tv_sec + 1E-6 * tv.tv_usec;
 }
 
-void swap(double* a, double* b) {
-    double tmp = *a;
-    *a = *b;
-    *b = tmp;
+int lt(const void* a, const void* b) {
+    double aa = *(double*)a;
+    double bb = *(double*)b;
+
+    if (aa < bb)
+        return -1;
+    if (aa > bb)
+        return 1;
+    return 0;
 }
-
-int partition(double A[], int64_t lo, int64_t hi) {
-    int64_t l = lo;
-    int64_t r = hi;
-
-    int64_t p = A[lo + (hi-lo)/2];
-
-    while (1) {
-        while (A[l] < p)
-            l++;
-        while (A[r] > p)
-            r--;
-
-        if (l < r)
-            swap(&A[l], &A[r]);
-        else
-            return l;
-    }
-
-    return l;
-}
-
-void quicksort(double A[], int64_t lo, int64_t hi) {
-    if (lo >= hi)
-        return;
-
-    int64_t p = partition(A, lo, hi);
-
-    quicksort(A, lo, p);
-    quicksort(A, p+1, hi);
-}
-
-/*
- * TODO: Runs fine up to and including N = 15357, but it hangs
- *       when N is any bigger
- *
- *       Adding srand() call increases it to 48559, but problem
- *       remains
- */
 
 int main(int argc, char* argv[]) {
-    int64_t i, N;
+    int i, N;
     double start, end;
 
     srand(123);
@@ -69,14 +34,14 @@ int main(int argc, char* argv[]) {
 
     double* A = malloc(sizeof(*A) * N);
     if (!A) {
-        printf("Unable to allocate memory for %ld doubles\n", N);
+        printf("Unable to allocate memory for %d doubles\n", N);
         return -1;
     }
     for (i = 0; i < N; i++)
-        A[i] = (double)rand();
+        A[i] = (double)rand() / (double)RAND_MAX;
 
     start = wctime();
-    quicksort(A, 0, N-1);
+    qsort(A, N, sizeof(*A), lt);
     end = wctime();
 
     printf("%f\n", end-start);
