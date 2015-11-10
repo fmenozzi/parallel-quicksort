@@ -33,10 +33,13 @@ struct indices partition(int A[], int lo, int hi) {
     }
 
     // Partition A
+    #pragma omp parallel for private(i)
     for (i = 0; i < ltn; i++)
         A[lo + i] = lt[i];
+    #pragma omp parallel for private(i)
     for (i = 0; i < eqn; i++)
         A[lo + ltn + i] = eq[i];
+    #pragma omp parallel for private(i)
     for (i = 0; i < gtn; i++)
         A[lo + ltn + eqn + i] = gt[i];
 
@@ -58,10 +61,10 @@ void quicksort(int A[], int lo, int hi) {
     quicksort(A, i.right, hi);
 }
 
-#define N 8
+#define N 16
 
 int main(void) {
-    int A[N] = {1,3,5,3,2,2,1,5};
+    int A[N] = {1,3,4,3,2,2,1,4,1,3,4,3,2,2,1,4};
 
     quicksort(A, 0, N-1);
 
