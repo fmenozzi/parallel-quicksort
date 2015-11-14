@@ -39,9 +39,6 @@ int* prefix_sum(int X[], int lo, int hi) {
 }
 
 struct pair partition(int A[], int lo, int hi) {
-    static int call = 0;
-    call++;
-
     int Ap = A[lo + (hi-lo)/2];
 
     int n = hi-lo+1;
@@ -53,15 +50,13 @@ struct pair partition(int A[], int lo, int hi) {
     int i;
 
     // Determine the sizes of each partition
-    #pragma omp parallel for private(i) reduction(+:ltn)
     for (i = lo; i <= hi; i++)
         if (A[i] < Ap)
             ltn += 1;
-    #pragma omp parallel for private(i) reduction(+:gtn)
     for (i = lo; i <= hi; i++)
         if (A[i] > Ap)
             gtn += 1;
-    eqn = hi-lo+1-ltn-gtn;
+    eqn = n-ltn-gtn;
 
     // Allocate partitions
     int* lt = malloc(sizeof(*lt) * ltn);
@@ -73,9 +68,9 @@ struct pair partition(int A[], int lo, int hi) {
     int* eqmask = malloc(sizeof(*eqmask) * n);
     int* gtmask = malloc(sizeof(*gtmask) * n);
     for (i = 0; i < n; i++) {
-        ltmask[i] = A[i] < Ap;
-        eqmask[i] = A[i] == Ap;
-        gtmask[i] = A[i] > Ap;
+        ltmask[i] = A[lo + i] < Ap;
+        eqmask[i] = A[lo + i] == Ap;
+        gtmask[i] = A[lo + i] > Ap;
     }
 
     // Calculate prefix sums
@@ -86,21 +81,18 @@ struct pair partition(int A[], int lo, int hi) {
     // Populate lt, eq, and gt
     for (i = 0; i < n; i++) {
         if (ltmask[i])
-            lt[ltsum[i]-1] = A[i];
+            lt[ltsum[i]-1] = A[lo + i];
         if (eqmask[i])
-            eq[eqsum[i]-1] = A[i];
+            eq[eqsum[i]-1] = A[lo + i];
         if (gtmask[i])
-            gt[gtsum[i]-1] = A[i];
+            gt[gtsum[i]-1] = A[lo + i];
     }
 
     // Copy partitions into A
-    #pragma omp parallel for private(i)
     for (i = 0; i < ltn; i++)
         A[lo + i] = lt[i];
-    #pragma omp parallel for private(i)
     for (i = 0; i < eqn; i++)
         A[lo + ltn + i] = eq[i];
-    #pragma omp parallel for private(i)
     for (i = 0; i < gtn; i++)
         A[lo + ltn + eqn + i] = gt[i];
 
@@ -111,6 +103,10 @@ struct pair partition(int A[], int lo, int hi) {
     free(ltmask);
     free(eqmask);
     free(gtmask);
+
+    free(ltsum);
+    free(eqsum);
+    free(gtsum);
 
     struct pair idxs = {lo + ltn - 1, lo + ltn + eqn};
     return idxs;
@@ -130,13 +126,13 @@ void quicksort(int A[], int lo, int hi) {
 
 int main() {
     int A[N] = {1,3,4,3,2,2,1,4,1,3,4,3,2,2,1,4};
+    int i;
+
+    for (i = 0; i < N; i++) printf("%d ", A[i]); printf("\n");
 
     quicksort(A, 0, N-1);
 
-    int i;
-    for (i = 0; i < N; i++)
-        printf("%d ", A[i]);
-    printf("\n");
+    for (i = 0; i < N; i++) printf("%d ", A[i]); printf("\n");
 
     return 0;
 }
