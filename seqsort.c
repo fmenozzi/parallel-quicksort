@@ -63,7 +63,7 @@ void quicksort(int A[], int lo, int hi) {
 
 #define N 16
 
-int main(void) {
+int main() {
     int A[N] = {1,3,4,3,2,2,1,4,1,3,4,3,2,2,1,4};
 
     quicksort(A, 0, N-1);
