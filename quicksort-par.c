@@ -4,17 +4,21 @@
 
 #include <omp.h>
 
-#define EPSILON 0.00001
-
 struct pair {
     int left;
     int right;
 };
 
+double wctime() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + 1E-6 * tv.tv_usec;
+}
+
 int* prefix_sum(int X[], int lo, int hi) {
     int n = hi-lo+1;
 
-    int* Y = malloc(sizeof(*Y) * n/2);
+    int* Y = malloc(sizeof(*Y) * n/2 + 2); // TODO: Why + 2?
     int* S = malloc(sizeof(*S) * n);
 
     int i;
@@ -72,8 +76,8 @@ struct pair partition(double A[], int lo, int hi) {
     int* gtmask = malloc(sizeof(*gtmask) * n);
     for (i = 0; i < n; i++) {
         ltmask[i] = A[lo + i] < Ap;
-        eqmask[i] = fabs(A[lo + i] - Ap) < EPSILON;
         gtmask[i] = A[lo + i] > Ap;
+        eqmask[i] = !ltmask[i] && !gtmask[i];
     }
 
     // Calculate prefix sums
@@ -125,17 +129,29 @@ void quicksort(double A[], int lo, int hi) {
     quicksort(A, p.right, hi);
 }
 
-#define N 16
+int main(int argc, char* argv[]) {
+    int i, N;
+    double start, end;
 
-int main() {
-    double A[N] = {1.,3.,4.,3.,2.,2.,1.,4.,1.,3.,4.,3.,2.,2.,1.,4.};
-    int i;
+    srand(123);
 
-    for (i = 0; i < N; i++) printf("%.1f ", A[i]); printf("\n");
+    if (argc != 2) {
+        printf("Usage: ./quicksort-par N\n");
+        return -1;
+    }
+    N = atol(argv[1]);
 
+    double* A = malloc(sizeof(*A) * N);
+    for (i = 0; i < N; i++)
+        A[i] = (double)rand() / (double)RAND_MAX;
+
+    start = wctime();
     quicksort(A, 0, N-1);
+    end = wctime();
 
-    for (i = 0; i < N; i++) printf("%.1f ", A[i]); printf("\n");
+    printf("%f\n", end-start);
+
+    free(A);
 
     return 0;
 }
