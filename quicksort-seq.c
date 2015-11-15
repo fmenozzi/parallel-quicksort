@@ -33,10 +33,6 @@ int main(int argc, char* argv[]) {
     N = atol(argv[1]);
 
     double* A = malloc(sizeof(*A) * N);
-    if (!A) {
-        printf("Unable to allocate memory for %d doubles\n", N);
-        return -1;
-    }
     for (i = 0; i < N; i++)
         A[i] = (double)rand() / (double)RAND_MAX;
 
@@ -45,6 +41,8 @@ int main(int argc, char* argv[]) {
     end = wctime();
 
     printf("%f\n", end-start);
+
+    free(A);
 
     return 0;
 }
