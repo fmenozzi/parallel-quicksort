@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <omp.h>
+
+#define EPSILON 0.00001
 
 struct pair {
     int left;
@@ -69,7 +72,7 @@ struct pair partition(int A[], int lo, int hi) {
     int* gtmask = malloc(sizeof(*gtmask) * n);
     for (i = 0; i < n; i++) {
         ltmask[i] = A[lo + i] < Ap;
-        eqmask[i] = A[lo + i] == Ap;
+        eqmask[i] = fabs(A[lo + i] - Ap) < EPSILON;
         gtmask[i] = A[lo + i] > Ap;
     }
 
