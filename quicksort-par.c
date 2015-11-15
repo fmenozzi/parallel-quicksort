@@ -41,8 +41,8 @@ int* prefix_sum(int X[], int lo, int hi) {
     return S;
 }
 
-struct pair partition(int A[], int lo, int hi) {
-    int Ap = A[lo + (hi-lo)/2];
+struct pair partition(double A[], int lo, int hi) {
+    double Ap = A[lo + (hi-lo)/2];
 
     int n = hi-lo+1;
 
@@ -62,9 +62,9 @@ struct pair partition(int A[], int lo, int hi) {
     eqn = n-ltn-gtn;
 
     // Allocate partitions
-    int* lt = malloc(sizeof(*lt) * ltn);
-    int* eq = malloc(sizeof(*eq) * eqn);
-    int* gt = malloc(sizeof(*gt) * gtn);
+    double* lt = malloc(sizeof(*lt) * ltn);
+    double* eq = malloc(sizeof(*eq) * eqn);
+    double* gt = malloc(sizeof(*gt) * gtn);
 
     // Populate masks
     int* ltmask = malloc(sizeof(*ltmask) * n);
@@ -115,7 +115,7 @@ struct pair partition(int A[], int lo, int hi) {
     return idxs;
 }
 
-void quicksort(int A[], int lo, int hi) {
+void quicksort(double A[], int lo, int hi) {
     if (lo >= hi)
         return;
 
@@ -128,14 +128,14 @@ void quicksort(int A[], int lo, int hi) {
 #define N 16
 
 int main() {
-    int A[N] = {1,3,4,3,2,2,1,4,1,3,4,3,2,2,1,4};
+    double A[N] = {1.,3.,4.,3.,2.,2.,1.,4.,1.,3.,4.,3.,2.,2.,1.,4.};
     int i;
 
-    for (i = 0; i < N; i++) printf("%d ", A[i]); printf("\n");
+    for (i = 0; i < N; i++) printf("%.1f ", A[i]); printf("\n");
 
     quicksort(A, 0, N-1);
 
-    for (i = 0; i < N; i++) printf("%d ", A[i]); printf("\n");
+    for (i = 0; i < N; i++) printf("%.1f ", A[i]); printf("\n");
 
     return 0;
 }
