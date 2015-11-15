@@ -18,7 +18,7 @@ double wctime() {
 int* prefix_sum(int X[], int lo, int hi) {
     int n = hi-lo+1;
 
-    int* Y = malloc(sizeof(*Y) * n/2 + 2); // TODO: Why + 2?
+    int* Y = malloc(sizeof(*Y) * n/2);
     int* S = malloc(sizeof(*S) * n);
 
     int i;
