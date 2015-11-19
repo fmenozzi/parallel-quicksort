@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <cmath>
 
+#include <sys/time.h>
+
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
 
@@ -142,7 +144,7 @@ int main(int argc, char* argv[]) {
     }
     N = atol(argv[1]);
 
-    double* A = malloc(sizeof(*A) * N);
+    double* A = new double[N];
     for (i = 0; i < N; i++)
         A[i] = (double)rand() / (double)RAND_MAX;
 
@@ -153,7 +155,7 @@ int main(int argc, char* argv[]) {
 
     printf("%f\n", end-start);
 
-    free(A);
+    delete[] A;
 
     return 0;
 }
