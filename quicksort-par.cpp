@@ -54,17 +54,19 @@ struct pair partition(double A[], int lo, int hi) {
     // Determine the sizes of each partition
     cilk::reducer_opadd<double> ltn_reducer;
     cilk::reducer_opadd<double> gtn_reducer;
-    cilk_for (int i = lo; i <= hi; i++)
+    cilk_for (int i = lo; i <= hi; i++) {
         if (A[i] < Ap)
             ltn_reducer += 1;
-    cilk_for (int i = lo; i <= hi; i++)
-        if (A[i] > Ap)
+        else if (A[i] > Ap)
             gtn_reducer += 1;
+    }
     int ltn = ltn_reducer.get_value();
     int gtn = gtn_reducer.get_value();
     int eqn = n-ltn-gtn;
 
     // Allocate partitions
+    // TODO: See if you can't just allocate a single
+    //       array of size n instead
     double* lt = new double[ltn];
     double* eq = new double[eqn];
     double* gt = new double[gtn];
