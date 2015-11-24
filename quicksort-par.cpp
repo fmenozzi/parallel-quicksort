@@ -7,6 +7,9 @@
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
 
+const int N;
+const int P = 20;
+
 struct pair {
     int left;
     int right;
@@ -16,6 +19,17 @@ double wctime() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec + 1E-6 * tv.tv_usec;
+}
+
+int lt(const void* a, const void* b) {
+    double aa = *(double*)a;
+    double bb = *(double*)b;
+
+    if (aa < bb)
+        return -1;
+    if (aa > bb)
+        return 1;
+    return 0;
 }
 
 int* prefix_sum(int X[], int lo, int hi) {
@@ -126,6 +140,12 @@ void quicksort(double A[], int lo, int hi) {
     if (lo >= hi)
         return;
 
+    int n = hi-lo+1;
+    if (n < N/P) {
+        qsort(A, n, sizeof(*A), lt);
+        return;
+    }
+
     struct pair p = partition(A, lo, hi);
 
     cilk_spawn quicksort(A, lo, p.left);
@@ -135,7 +155,7 @@ void quicksort(double A[], int lo, int hi) {
 }
 
 int main(int argc, char* argv[]) {
-    int i, N;
+    int i;
     double start, end;
 
     srand(123);
