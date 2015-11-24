@@ -7,7 +7,6 @@
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
 
-const int N;
 const int P = 20;
 
 struct pair {
@@ -136,42 +135,40 @@ struct pair partition(double A[], int lo, int hi) {
     return idxs;
 }
 
-void quicksort(double A[], int lo, int hi) {
+void quicksort(double A[], int lo, int hi, const int N) {
     if (lo >= hi)
         return;
 
     int n = hi-lo+1;
     if (n < N/P) {
-        qsort(A, n, sizeof(*A), lt);
+        qsort(A+lo, n, sizeof(*A), lt);
         return;
     }
 
     struct pair p = partition(A, lo, hi);
 
-    cilk_spawn quicksort(A, lo, p.left);
-    cilk_spawn quicksort(A, p.right, hi);
+    cilk_spawn quicksort(A, lo, p.left, N);
+    cilk_spawn quicksort(A, p.right, hi, N);
 
     cilk_sync;
 }
 
 int main(int argc, char* argv[]) {
-    int i;
-    double start, end;
-
     srand(123);
 
     if (argc != 2) {
         printf("Usage: ./quicksort-par N\n");
         return -1;
     }
-    N = atol(argv[1]);
+    const int N = atol(argv[1]);
 
     double* A = new double[N];
-    for (i = 0; i < N; i++)
+    for (int i = 0; i < N; i++)
         A[i] = (double)rand() / (double)RAND_MAX;
 
+    double start, end;
     start = wctime();
-    cilk_spawn quicksort(A, 0, N-1);
+    cilk_spawn quicksort(A, 0, N-1, N);
     cilk_sync;
     end = wctime();
 
