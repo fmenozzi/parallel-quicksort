@@ -1,14 +1,15 @@
 times_seq = dlmread('running-times/seq-times.txt');
 times_par = dlmread('running-times/par-times.txt');
 
-n = [10 100 1000 10000 100000 1000000 10000000 100000000 1000000000];
+m = 7;
 
+n = logspace(1,m,m);
 
-loglog(n(1:8), times_seq(1:8), 'r-', n(1:8), times_par(1:8), 'g-');
+semilogx(n, times_seq(1:m), 'r-', n, times_par(1:m), 'g-');
 
 grid;
-xlabel('log N');
-ylabel('Log Running Time (s)');
+xlabel('N');
+ylabel('Running Time (s)');
 title('Running Times of Sequential vs Parallel Quicksort');
 legend('Sequential', 'Parallel');
 
