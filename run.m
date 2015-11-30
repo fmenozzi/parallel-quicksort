@@ -1,11 +1,11 @@
 times_seq = dlmread('running-times/seq-times.txt');
 times_par = dlmread('running-times/par-times.txt');
 
-m = 7;
+m = 9;
 
 n = logspace(1,m,m);
 
-semilogx(n, times_seq(1:m), 'r-', n, times_par(1:m), 'g-');
+semilogx(n, times_seq(1:m), 'r-o', n, times_par(1:m), 'g-d');
 
 grid;
 xlabel('N');
