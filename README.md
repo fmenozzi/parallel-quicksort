@@ -1,4 +1,4 @@
-# comp633-pa2
+# Parallel Quicksort
 Implementation of parallel quicksort using the Cilk Plus parallel runtime for my parallel and distributed computing class. Both the implemetations of `quicksort` itself and (more importantly) `partition` were implemented in parallel. Results below were generated on a 20-core Xeon E5-2650 server with eight attached Intel Xeon Phi 5110P accelerators. For now, the code explicitly assumes a 20-core system, as quicksort will default to the C function `qsort` when the max level of parallelism has been achieved (i.e. when `n < N/P`).
 
 Requires Intel C/C++ compiler (`icc`) to run.
